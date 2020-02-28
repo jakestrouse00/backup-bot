@@ -41,7 +41,7 @@ async def on_message(message):
             except:
                 holding.append({'id': None, 'name': None, 'channels': hold, 'roles': roles})
         b = {'categories': holding, 'roles': roles}
-        
+
         while True:
             key = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-', k=9))
             backups = os.listdir('backups')
@@ -110,6 +110,27 @@ async def on_message(message):
                 pass
         await message.guild.create_text_channel(name="temp")
         await message.author.send('Server wipe complete!')
+    elif message.content.startswith('-remove backup'):
+        await message.channel.send(
+            '```Please send the backup code```')
+
+        def check(m):
+            if m.author.id == message.author.id:
+                if m.channel == message.channel:
+                    return 1
+
+        try:
+            msg = await bot.wait_for('message', check=check, timeout=60)
+        except:
+            await message.channel.send(
+                f"<@{message.author.id}> ```Removal timed out!```")
+            return None
+        backups = os.listdir('backups')
+        if msg.content + '.txt' not in backups:
+            await message.channel.send('```Invalid backup code!```')
+            return None
+        os.remove('backups/'+msg.content + '.txt')
+        await message.author.send('Backup removal complete!')
 
 
 bot.run('YOUR_BOT_TOKEN')
