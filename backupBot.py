@@ -15,8 +15,6 @@ async def on_ready():
     print(f"Bot in {len(bot.guilds)} servers")
 
 
-
-
 @bot.event
 async def on_guild_join(guild):
     print(f"\nBot joined {guild.name} | {guild.id}\n")
@@ -29,7 +27,8 @@ async def on_message(message):
         roles = []
         for role in serverRoles:
             if role.name != '@everyone':
-                roles.append({'name': role.name, 'perms': role.permissions, 'color': role.color, 'hoist': role.hoist, 'mentionable': role.mentionable})
+                roles.append({'name': role.name, 'perms': role.permissions, 'color': role.color, 'hoist': role.hoist,
+                              'mentionable': role.mentionable})
         catagorys = message.guild.by_category()
         holding = []
         for catagory in catagorys:
@@ -42,8 +41,13 @@ async def on_message(message):
             except:
                 holding.append({'id': None, 'name': None, 'channels': hold, 'roles': roles})
         b = {'categories': holding, 'roles': roles}
-        key = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-', k=9))
-        with open('backups/'+key + '.txt', 'wb') as fp:
+        
+        while True:
+            key = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-', k=9))
+            backups = os.listdir('backups')
+            if key+'.txt' not in backups:
+                break
+        with open('backups/' + key + '.txt', 'wb') as fp:
             pickle.dump(b, fp)
 
         await message.channel.send(f'Backup code: {key}')
@@ -64,10 +68,10 @@ async def on_message(message):
                 f"<@{message.author.id}> ```Load timed out!```")
             return None
         backups = os.listdir('backups')
-        if msg.content+'.txt' not in backups:
+        if msg.content + '.txt' not in backups:
             await message.channel.send('```Invalid backup code!```')
             return None
-        with open('backups/'+msg.content + '.txt', 'rb') as fp:
+        with open('backups/' + msg.content + '.txt', 'rb') as fp:
             backupLoad = pickle.load(fp)
         for category in backupLoad['categories']:
             if category['id'] is not None:
@@ -82,7 +86,8 @@ async def on_message(message):
                 else:
                     await message.guild.create_text_channel(name=channel['name'], category=j)
         for role in reversed(backupLoad['roles']):
-            await message.guild.create_role(name=role['name'], permissions=role['perms'], colour=role['color'], hoist=role['hoist'], mentionable=role['mentionable'])
+            await message.guild.create_role(name=role['name'], permissions=role['perms'], colour=role['color'],
+                                            hoist=role['hoist'], mentionable=role['mentionable'])
         channels = message.guild.text_channels
         for i in channels:
             if i.name == 'temp':
@@ -105,5 +110,6 @@ async def on_message(message):
                 pass
         await message.guild.create_text_channel(name="temp")
         await message.author.send('Server wipe complete!')
+
 
 bot.run('YOUR_BOT_TOKEN')
