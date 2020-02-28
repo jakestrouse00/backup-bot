@@ -1,11 +1,8 @@
 import discord
 from discord.ext import commands
-import threading
 import random
 import pickle
 import os
-from pydactyl import PterodactylClient
-import requests
 
 bot = commands.Bot(command_prefix='-')
 bot.remove_command('help')
@@ -111,4 +108,4 @@ async def on_message(message):
         await message.guild.create_text_channel(name="temp")
         await message.author.send('Server wipe complete!')
 
-bot.run('')
+bot.run('YOUR_BOT_TOKEN')
