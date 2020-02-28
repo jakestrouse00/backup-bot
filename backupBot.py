@@ -53,11 +53,9 @@ async def on_message(message):
             '```Please send the backup code```')
 
         def check(m):
-            # change if bot account changes from testapp
-            if m.author.id != 641406576942514178:
-                if m.author.id == message.author.id:
-                    if m.channel == message.channel:
-                        return 1
+            if m.author.id == message.author.id:
+                if m.channel == message.channel:
+                    return 1
 
         try:
             msg = await bot.wait_for('message', check=check, timeout=60)
